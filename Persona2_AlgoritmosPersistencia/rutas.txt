@@ -1,0 +1,13 @@
+El Ejido:La Alameda,1.2;Parque Arbolito,0.8;Estadio Olímpico Atahualpa,4.5
+La Alameda:El Ejido,1.2;Parque Itchimbía,1.1;Casa de la Cultura,0.6
+Parque Arbolito:El Ejido,0.8;Casa de la Cultura,0.4;Universidad Central,1.2
+Casa de la Cultura:Parque Arbolito,0.4;La Alameda,0.6;Museo Nacional del Ecuador,0.2
+Museo Nacional del Ecuador:Casa de la Cultura,0.2;Estadio Olímpico Atahualpa,2.0
+Estadio Olímpico Atahualpa:Museo Nacional del Ecuador,2.0;El Ejido,4.5;Quicentro Shopping,1.1
+Universidad Central:Parque Arbolito,1.2;Plaza Indoamérica,0.6
+Plaza Indoamérica:Universidad Central,0.6;Bulevar 24 de Mayo,3.3
+Bulevar 24 de Mayo:Plaza Indoamérica,3.3;Teatro Sucre,1.5
+Teatro Sucre:Bulevar 24 de Mayo,1.5;Calle La Espe,1.0
+Calle La Espe:Teatro Sucre,1.0
+Quicentro Shopping:Estadio Olímpico Atahualpa,1.1
+Parque Itchimbía:
