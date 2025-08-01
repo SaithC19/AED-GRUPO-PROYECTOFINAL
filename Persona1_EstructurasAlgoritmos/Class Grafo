@@ -1,0 +1,27 @@
+class Grafo:
+    def __init__(self):
+        self.vertices = {}
+
+    def agregar_vertice(self, ciudad):
+        if ciudad not in self.vertices:
+            self.vertices[ciudad] = {}
+
+    def agregar_arista(self, ciudad1, ciudad2, distancia, costo):
+        self.agregar_vertice(ciudad1)
+        self.agregar_vertice(ciudad2)
+        self.vertices[ciudad1][ciudad2] = {'distancia': distancia, 'costo': costo}
+        self.vertices[ciudad2][ciudad1] = {'distancia': distancia, 'costo': costo}
+
+    def eliminar_ciudad(self, ciudad):
+        if ciudad in self.vertices:
+            self.vertices.pop(ciudad)
+            for c in self.vertices:
+                self.vertices[c].pop(ciudad, None)
+
+    def actualizar_ciudad(self, ciudad):
+        if ciudad in self.vertices:
+            for destino in self.vertices[ciudad]:
+                nueva_dist = float(input(f"Nueva distancia a {destino}: "))
+                nuevo_costo = float(input(f"Nuevo costo a {destino}: "))
+                self.vertices[ciudad][destino] = {'distancia': nueva_dist, 'costo': nuevo_costo}
+                self.vertices[destino][ciudad] = {'distancia': nueva_dist, 'costo': nuevo_costo}
