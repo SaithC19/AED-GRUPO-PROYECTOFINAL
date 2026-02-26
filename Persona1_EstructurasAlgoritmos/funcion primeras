@@ -1,0 +1,173 @@
+def mostrar_matriz_costos_y_distancias(grafo):
+    ciudades = list(grafo.vertices.keys())
+
+    # Encabezado
+    print("\nMATRIZ DE DISTANCIAS Y COSTOS (origen → destino)")
+    print(f"{'':15}", end="")
+    for destino in ciudades:
+        print(f"{destino:15}", end="")
+    print("\n" + "-" * (16 * (len(ciudades) + 1)))
+
+    for origen in ciudades:
+        print(f"{origen:15}", end="")
+        for destino in ciudades:
+            if origen == destino:
+                print(f"{'---':15}", end="")
+            else:
+                ruta = grafo.obtener_ruta(origen, destino)
+                if ruta:
+                    distancia_total = sum(
+                        grafo.vertices[ruta[i]][ruta[i+1]]['distancia']
+                        for i in range(len(ruta) - 1)
+                    )
+                    costo_total = sum(
+                        grafo.vertices[ruta[i]][ruta[i+1]]['costo']
+                        for i in range(len(ruta) - 1)
+                    )
+                    print(f"D:{distancia_total} C:{costo_total}", end="  ")
+                else:
+                    print(f"{'No hay ruta':15}", end="")
+        print()
+
+# grafo.py
+
+import heapq
+
+class Grafo:
+    def __init__(self):
+        self.vertices = {}
+
+    def agregar_vertice(self, ciudad):
+        if ciudad not in self.vertices:
+            self.vertices[ciudad] = {}
+
+    def agregar_arista(self, ciudad1, ciudad2, distancia, costo):
+        self.agregar_vertice(ciudad1)
+        self.agregar_vertice(ciudad2)
+        self.vertices[ciudad1][ciudad2] = {'distancia': distancia, 'costo': costo}
+        self.vertices[ciudad2][ciudad1] = {'distancia': distancia, 'costo': costo}  # Si es bidireccional
+
+    def dijkstra(self, inicio):
+        distancias = {v: float('inf') for v in self.vertices}
+        padres = {v: None for v in self.vertices}
+        distancias[inicio] = 0
+        cola = [(0, inicio)]
+
+        while cola:
+            dist_actual, u = heapq.heappop(cola)
+            if dist_actual > distancias[u]:
+                continue
+            for v, datos in self.vertices[u].items():
+                nueva_dist = dist_actual + datos['distancia']
+                if nueva_dist < distancias[v]:
+                    distancias[v] = nueva_dist
+                    padres[v] = u
+                    heapq.heappush(cola, (nueva_dist, v))
+        return distancias, padres
+
+    def obtener_ruta(self, inicio, fin):
+        _, padres = self.dijkstra(inicio)
+        ruta = []
+        actual = fin
+        while actual is not None:
+            ruta.append(actual)
+            actual = padres[actual]
+        ruta.reverse()
+        if ruta[0] == inicio:
+            return ruta
+        else:
+            return []
+
+def guardar_matriz_en_txt(grafo, nombre_archivo='matriz.txt'):
+    ciudades = list(grafo.vertices.keys())
+    with open(nombre_archivo, 'w') as f:
+        f.write("Matriz de Distancias y Costos\n")
+        f.write("Origen/Destino".ljust(15) + ''.join([c.ljust(15) for c in ciudades]) + "\n")
+        for origen in ciudades:
+            f.write(origen.ljust(15))
+            for destino in ciudades:
+                if origen == destino:
+                    f.write('---'.ljust(15))
+                else:
+                    ruta = grafo.obtener_ruta(origen, destino)
+                    if ruta:
+                        dist = sum(grafo.vertices[ruta[i]][ruta[i+1]]['distancia'] for i in range(len(ruta)-1))
+                        costo = sum(grafo.vertices[ruta[i]][ruta[i+1]]['costo'] for i in range(len(ruta)-1))
+                        f.write(f"D:{dist} C:{costo}".ljust(15))
+                    else:
+                        f.write("No ruta".ljust(15))
+            f.write("\n")
+
+def menu_admin(grafo):
+    while True:
+        print("\n--- Menú Administrador ---")
+        print("1. Agregar ciudad y ruta")
+        print("2. Ver conexiones actuales")
+        print("3. Ver matriz de costos y distancias")
+        print("4. Guardar cambios")
+        print("5. Salir")
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == "1":
+            ciudad1 = input("Nombre de la ciudad 1: ")
+            ciudad2 = input("Nombre de la ciudad 2: ")
+            distancia = int(input("Distancia: "))
+            costo = int(input("Costo: "))
+            grafo.agregar_arista(ciudad1, ciudad2, distancia, costo)
+            print("Ruta agregada correctamente.")
+
+        elif opcion == "2":
+            print("\n Conexiones actuales:")
+            for ciudad, conexiones in grafo.vertices.items():
+                print(f"{ciudad} => {conexiones}")
+
+        elif opcion == "3":
+            mostrar_matriz_costos_y_distancias(grafo)
+
+        elif opcion == "4":
+            guardar_matriz_en_txt(grafo)
+            print("Datos guardados correctamente.")
+
+        elif opcion == "5":
+            print("Saliendo del menú administrador.")
+            break
+
+        else:
+            print("Opción inválida.")
+def menu_cliente(grafo, usuario):
+    ruta_seleccionada = []
+
+    while True:
+        print("\n--- Menú Cliente ---")
+        print("1. Ver mapa de rutas")
+        print("2. Consultar ruta óptima")
+        print("3. Ver matriz de distancias y costos")
+        print("4. Salir")
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == "1":
+            print("\nMapa de rutas:")
+            for ciudad, conexiones in grafo.vertices.items():
+                print(f"{ciudad} => {conexiones}")
+
+        elif opcion == "2":
+            inicio = input("Origen: ")
+            destino = input("Destino: ")
+            if inicio in grafo.vertices and destino in grafo.vertices:
+                ruta = grafo.obtener_ruta(inicio, destino)
+                print("Ruta óptima:", " → ".join(ruta))
+            else:
+                print("Una o ambas ciudades no existen.")
+
+        elif opcion == "3":
+            mostrar_matriz_costos_y_distancias(grafo)
+
+        elif opcion == "4":
+            print("Saliendo del menú cliente.")
+            break
+
+        else:
+            print("Opción inválida.")
+
+if __name__ == "__main__":
+    menu_admin()
